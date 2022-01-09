@@ -20,14 +20,13 @@ Route::get('/', function () {
 
 
 Route::get('posts/{post}', function ($slug) {
-    $path = __DIR__ . "/../resources/posts/{$slug}.html";
+    //Find a post by its slug and pass it to a view called "post"
 
-    if (! file_exists($path))
+    if (! file_exists($path = __DIR__ . "/../resources/posts/{$slug}.html"))
         return redirect ("/");
 
-    $post = file_get_contents($path);
+    //Enable caching of post
+    $post = cache()->remember("posts.{$slug}", 5, fn() => file_get_contents($path));
 
-    return view('post', [
-        'post' => $post
-    ]);
-});
+    return view('post', ['post' => $post]);
+})->where('post', '[A-z_\-]+');
