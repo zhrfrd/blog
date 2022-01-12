@@ -41,4 +41,16 @@ class Post {
         //Of all the blog posts, find the one with a slug that matches the one that was requested
         return static::all()->firstWhere('slug', $slug);
     }
+
+    //Track post and throw an exception if it couldn't find it
+    public static function findOrFail($slug) {
+        //Of all the blog posts, find the one with a slug that matches the one that was requested
+        $post = static::find($slug);
+
+        if (! $post){   //If the slug doesn't match any post throw exception (404 error message)
+            throw new ModelNotFoundException();
+        }
+
+        return $post;
+    }
 }
