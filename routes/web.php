@@ -2,6 +2,7 @@
 
 use App\Models\Post;
 use App\Models\Category;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\File;
 use Spatie\YamlFrontMatter\YamlFrontMatter;
@@ -19,8 +20,13 @@ use Spatie\YamlFrontMatter\YamlFrontMatter;
 
 //When the homepage is loaded (/) call the view (resources > views) welcome.blade.php
 Route::get('/', function () {
+    DB::listen(function ($query) {
+        logger($query->sql);
+    });
+
     return view('posts', [
-        'posts' => Post::all()
+        // 'posts' => Post::all()     //<------ N+1 PROBLEM.
+        'posts' => Post::with('category')->get()     //Reduce the number of query ^^^ Do 1 query for posts and 1 for categories  (Load every post with corresponding category)
     ]); 
 });
 
