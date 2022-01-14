@@ -10,12 +10,13 @@ class Post extends Model
     use HasFactory;   //Post::factory()
 
     protected $guarded = [];
+    protected $with = ['category', 'author'];   // Prevent N+1 problem
 
     public function category() {
         return $this->belongsTo(Category::class);
     }
 
-    public function user() {
-        return $this->belongsTo(User::class);
+    public function author() {   //author_id
+        return $this->belongsTo(User::class, 'user_id');
     }
 }
