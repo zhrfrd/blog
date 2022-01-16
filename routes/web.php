@@ -28,9 +28,10 @@ Route::get('/', function () {
 
     return view('posts', [
         // 'posts' => Post::all()     //<------ N+1 PROBLEM.
-        'posts' => Post::latest()->get()
+        'posts' => Post::latest()->get(),
+        'categories' => Category::all()
     ]); 
-});
+})->name('home');
 
 
 Route::get('posts/{post:slug}', function (Post $post) {   //Find post by slug
@@ -42,12 +43,15 @@ Route::get('posts/{post:slug}', function (Post $post) {   //Find post by slug
 
 Route::get('categories/{category:slug}', function (Category $category) {
     return view('posts', [   //Use 'posts' view to show posts in category
-        'posts' => $category->posts   //->load(['category', 'author']) to avoid N+1 problem
+        'posts' => $category->posts,   //->load(['category', 'author']) to avoid N+1 problem
+        'currentCategory' => $category,
+        'categories' => Category::all()
     ]);
-});
+})->name('category');
 
 Route::get('authors/{author:username}', function (User $author) {
     return view('posts', [   //Use 'posts' view to show posts in category
-        'posts' => $author->posts   //->load(['category', 'author']) to avoid N+1 problem
+        'posts' => $author->posts,   //->load(['category', 'author']) to avoid N+1 problem
+        'categories' => Category::all()
     ]);
 });
