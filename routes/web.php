@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\PostController;
 use App\Models\Post;
 use App\Models\Category;
 use App\Models\User;
@@ -20,27 +21,10 @@ use Spatie\YamlFrontMatter\YamlFrontMatter;
 */
 
 //When the homepage is loaded (/) call the view (resources > views) welcome.blade.php
-Route::get('/', function () {
-    //  TEST N+1 problem
-    DB::listen(function ($query) {
-        logger($query->sql);
-    });
+Route::get('/', [PostController::class, 'index'])->name('home');
 
-    return view('posts', [
-        // 'posts' => Post::all()     //<------ N+1 PROBLEM.
-        'posts' => Post::latest()->get(),
-        'categories' => Category::all()
-    ]); 
-})->name('home');
-
-
-Route::get('posts/{post:slug}', function (Post $post) {   //Find post by slug
-    //Find a post by its slug and pass it to a view called "post"
-    return view('post', [
-        'post' => $post
-    ]);
-});
-
+Route::get('posts/{post:slug}', [PostController::class, 'show']);   //Find post by slug
+    
 Route::get('categories/{category:slug}', function (Category $category) {
     return view('posts', [   //Use 'posts' view to show posts in category
         'posts' => $category->posts,   //->load(['category', 'author']) to avoid N+1 problem
